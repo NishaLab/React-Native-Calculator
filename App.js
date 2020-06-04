@@ -3,28 +3,32 @@ import {View, StyleSheet, TextInput} from 'react-native';
 import CustomButton from './components/numpad';
 import {evaluate} from 'mathjs';
 const buttons = [
-  ['CLEAR', 'DEL', 'NEG', '%'],
+  ['CLEAR', 'DEL'],
   [7, 8, 9, '/'],
   [4, 5, 6, '*'],
   [1, 2, 3, '-'],
-  ['.', 0, '+', '='],
+  ['%', 0, '+', '='],
 ];
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = {display: '', operator: null};
+    this.state = {display: '', operator: null, prevNum: '', curNum: ''};
   }
+  delete = () => {
+    let foo = this.state.display;
+    if (this.isOperator(foo[foo.length - 1])) {
+      this.setState({operator: null});
+    }
+    this.setState({display: this.state.display.slice(0, -1)});
+  };
+
   handleInput = val => {
     switch (val) {
       case 'CLEAR':
         this.setState({display: '', operator: null});
         break;
       case 'DEL':
-        let foo = this.state.display;
-        if (this.isOperator(foo[foo.length - 1])) {
-          this.setState({operator: null});
-        }
-        this.setState({display: this.state.display.slice(0, -1)});
+        this.delete();
         break;
       case '*':
       case '-':
