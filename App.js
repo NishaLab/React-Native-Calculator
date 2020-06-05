@@ -3,11 +3,11 @@ import {View, StyleSheet, TextInput} from 'react-native';
 import CustomButton from './components/numpad';
 import {evaluate} from 'mathjs';
 const buttons = [
-  ['CLEAR', 'DEL'],
+  ['CLEAR', 'DEL', 'NEG', '%'],
   [7, 8, 9, '/'],
   [4, 5, 6, '*'],
   [1, 2, 3, '-'],
-  ['%', 0, '+', '='],
+  ['.', 0, '+', '='],
 ];
 class App extends Component {
   constructor(props) {
@@ -21,7 +21,14 @@ class App extends Component {
     }
     this.setState({display: this.state.display.slice(0, -1)});
   };
-
+  decimal(val) {
+    var a = this.state.display.slice(-1);
+    if (a !== '.') {
+      this.state.display.length
+        ? this.setState({display: this.state.display + val})
+        : this.setState({display: '0' + val});
+    }
+  }
   handleInput = val => {
     switch (val) {
       case 'CLEAR':
@@ -30,6 +37,13 @@ class App extends Component {
       case 'DEL':
         this.delete();
         break;
+      case '.':
+        this.decimal(val);
+        break;
+      case 'NEG':
+        this.setState({display: this.state.display + '-'});
+        break;
+
       case '*':
       case '-':
       case '+':
@@ -55,9 +69,14 @@ class App extends Component {
   };
   calculate(val) {
     let arr = this.state.display.split(this.state.operator);
-    let num1 = evaluate(arr[0]);
-    let num2 = evaluate(arr[1]);
-    console.log(val);
+    let num1, num2;
+    try {
+      num1 = evaluate(arr[0]);
+      num2 = evaluate(arr[1]);
+    } catch (error) {
+      this.setState({display: 'Syntax Error', operator: null});
+      return;
+    }
 
     switch (this.state.operator) {
       case '+':
